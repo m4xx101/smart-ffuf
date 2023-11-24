@@ -2,8 +2,8 @@
 
 usage() {
     echo "Usage: $0 -i <input domain or file> -w <wordlist> [-a <additional ffuf args>] [-r <rate>]"
-    echo "  -i: Single domain or file containing list of domains/IP:PORTs"
-    echo "  -w: Wordlist"
+    echo "  -i: Domain or file containing list of domains/IPs"
+    echo "  -w: Wordlist file for ffuf"
     echo "  -a: Additional arguments for ffuf (optional)"
     echo "  -r: Rate limit for ffuf requests (default: 10)"
     exit 1
@@ -11,7 +11,6 @@ usage() {
 
 if ! command -v ffuf &> /dev/null; then
     echo "ffuf could not be found. Please install it first."
-    echo "sudo apt get install ffuf -y"
     exit 1
 fi
 
@@ -41,11 +40,32 @@ run_ffuf() {
             else
                 same_line_count=1
             fi
-
             prev_line_count=$current_line_count
         fi
     done
 }
+
+combine_html_files() {
+    local output_file="combined_output.html"
+    local table_counter=1
+
+    echo "<!DOCTYPE html><html><head><title>Combined Output</title></head><body>" > "$output_file"
+
+    for file in *.html; do
+        echo "<div style='margin-top:20px; margin-bottom:20px;'>" >> "$output_file"
+        echo "<h2 style='color: blue;'>Content from: $file</h2>" >> "$output_file"
+        
+        sed "s/id=\"ffufreport\"/id=\"ffufreport_${table_counter}\"/" "$file" >> "$output_file"
+
+        echo "</div>" >> "$output_file"
+        ((table_counter++))
+    done
+
+    echo "</body></html>" >> "$output_file"
+    echo ""
+    echo "All HTML files have been combined into $output_file"
+}
+
 
 while getopts ":i:w:a:r:" opt; do
     case $opt in
@@ -68,3 +88,5 @@ if [[ -f "$input" ]]; then
 else
     run_ffuf "$input" "$wordlist" "$additional_args" "$throttle"
 fi
+
+combine_html_files
