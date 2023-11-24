@@ -4,11 +4,14 @@
 
 smart-ffuf.sh is a shell script that enhances the functionality of the ffuf fuzzing tool. It automates fuzzing across multiple targets and intelligently moves to the next target if similar responses are detected consecutively.
 
+Gives output for all the different targets in one single HTML file which makes it easy for analyzing the output.
+
 ## Features
 
-Automates ffuf runs on multiple targets.
-Tracks the line count in responses.
-Moves to the next target if the same line count is detected in 15 consecutive responses.
+- Automates ffuf runs on multiple targets.
+- Tracks the line count in responses.
+- Moves to the next target if the same line count is detected in 15 consecutive responses.
+- Gives all in 1 HTML output
 
 ## Usage
 
